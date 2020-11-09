@@ -40,8 +40,9 @@ export default {
    return {
      items: [
        { title: "Dashboard", to: "/" },
-       { title: "GD", to: "/gd" },
-       { title: "UGD", to: "/ugd"},
+       { title: "Guided", to: "/gd" },
+       { title: "Unguided", to: "/ugd"},
+       { title: "Tugas", to: "/tgs"},
      ],
    };
  },

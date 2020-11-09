@@ -10,25 +10,27 @@
                 label="search"
                 single-line
                 hide-details></v-text-field>
-            <v-select
-                v-model="search"
-                :items="['All Priority','Penting', 'Biasa', 'Tidak penting']"
-                label="All Priority"
-                hide-details
-                outlined
-            ></v-select>
-        <v-spacer></v-spacer>
-                
+                <v-spacer></v-spacer>
+                <v-select
+                    :items="['All Priority','Penting', 'Biasa', 'Tidak Penting']"
+                    v-model="filters"
+                    label="Priority"
+                    @change="filterPriority"
+                    outlined
+                    hide-details
+                    class="mr-4"
+                    dense></v-select>
                 <v-btn color="success" dark @click="dialog = true">Tambah</v-btn>
             </v-card-title>
-            <v-data-table :headers="headers" :items="todos" :search="search" :filterPriority="filterPriority" pagination.sync="pagination">
+            
+            <v-data-table :headers="headers" :items="filterPriority" :search="search" pagination.sync="pagination">
                 <template v-slot:[`item.actions`]="{ item }">
-                    <v-btn small class="mr-2" @click="editItem(item)">
-                    edit
-                    </v-btn>
-                    <v-btn small @click="deleteItem(item)">
-                    delete
-                    </v-btn>
+                    <v-icon small color="red" class="mr-2" @click="editItem(item)">
+                    mdi-pencil
+                    </v-icon>
+                    <v-icon color="blue" small @click="deleteItem(item)">
+                    mdi-delete
+                    </v-icon>
                 </template>
             </v-data-table>
         </v-card>
@@ -53,7 +55,7 @@
                         <v-select
                             :items="['Penting', 'Biasa', 'Tidak Penting']"
                             v-model="formTodo.priority"
-                            label="Priority"
+                            label="All Priority"
                             required
                         ></v-select>
                         <v-textarea
@@ -76,8 +78,10 @@ export default {
     data(){
         return {
             search:null,
-            filter:null,
             dialog:false,
+            tempTodo:null,
+            filters:"All Priority",
+            selected: [],
             headers: [
                 {
                     text:'Task',
@@ -110,7 +114,7 @@ export default {
     },
     methods: {
         save(){
-            let index=  this.findIndexTodos(this.formTodo);
+            let index =  this.findIndexTodos(this.formTodo);
             if(index < 0){ 
                 this.todos.push(this.formTodo);
             }else {
@@ -120,6 +124,13 @@ export default {
             this.dialog = false;
         },
         cancel(){
+            let index =  this.findIndexTodos(this.formTodo);
+            if(index < 0){ 
+                this.todos.push(this.tempTodo);
+            }else {
+                this.todos[index] = this.tempTodo;
+            }
+            console.log(this.tempTodo);
             this.resetForm();
             this.dialog = false;
         },
@@ -131,7 +142,6 @@ export default {
             };
         },
         editItem(item){
-            let index = this.findIndexTodos(item);
             this.formTodo = item;
             this.dialog = true;
         },
@@ -145,6 +155,7 @@ export default {
         findIndexTodos(item){
             return this.todos.findIndex(obj => obj.task === item.task);
         },
+        
     },
     computed: {
         filterPriority(){
@@ -160,5 +171,6 @@ export default {
             
         },
     }
+    
 };
 </script>
